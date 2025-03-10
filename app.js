@@ -1,21 +1,19 @@
-function myPrompt() {
-    let number = prompt("Введите число");
-    
-    if (!Number.isInteger(Number(number))) {
-        alert("Некорректный ввод!");
-        return;
+function deepCopy(obj) { // рекурсивная функция
+    if (obj === null || typeof obj !== "object") {
+      return obj; // Возвращаем примитивы и null без изменений
     }
-
-    let base = prompt("Введите систему счисления для числа");
-    
-    if (!Number.isInteger(Number(base)) || base < 2 || base > 36) {
-        alert("Некорректный ввод!");
-        return;
+  
+    if (Array.isArray(obj)) {
+      return obj.map(deepCopy); // Для массивов создаем новый массив и копируем элементы рекурсивно
     }
-
-    let convertedNumber = Number(number).toString(Number(base));
-    
-    alert(`Ответ: число ${number} в ${base}-ой системе счисления = ${convertedNumber}`);
-}
-
-myPrompt();
+  
+    const copy = {}; // Новый объект
+    for (let key in obj) {
+      if (obj.hasOwnProperty(key)) {
+        copy[key] = deepCopy(obj[key]); // Рекурсивное копирование
+      }
+    }
+  
+    return copy;
+  }
+  
