@@ -1,21 +1,55 @@
-function myPrompt() {
-    let number = prompt("Введите число");
-    
-    if (!Number.isInteger(Number(number))) {
-        alert("Некорректный ввод!");
-        return;
+//1 глубокое копирование
+function deepCopy(obj) { // рекурсивная функция
+    if (obj === null || typeof obj !== "object") {
+      return obj; // Возвращаем примитивы и null без изменений
+    }
+  
+    if (Array.isArray(obj)) {
+      return obj.map(deepCopy); // Для массивов создаем новый массив и копируем элементы рекурсивно
+    }
+  
+    const copy = {}; // Новый объект
+    for (let key in obj) {
+      if (obj.hasOwnProperty(key)) {
+        copy[key] = deepCopy(obj[key]); // Рекурсивное копирование
+      }
+    }
+  
+    return copy;
+  }
+
+  //2
+  function selectFromInterval(arr, a, b) {
+    if (!Array.isArray(arr)) {
+        throw new Error("first parameter must be an array!");
     }
 
-    let base = prompt("Введите систему счисления для числа");
-    
-    if (!Number.isInteger(Number(base)) || base < 2 || base > 36) {
-        alert("Некорректный ввод!");
-        return;
+    if (!arr.every(item => typeof item === "number")) {
+        throw new Error("There are not only numbers in the array!");
     }
 
-    let convertedNumber = Number(number).toString(Number(base));
-    
-    alert(`Ответ: число ${number} в ${base}-ой системе счисления = ${convertedNumber}`);
+    if (!Number.isInteger(a) || !Number.isInteger(b)) {
+        throw new Error("incorrect input parameters!");
+    }
+
+    const [min, max] = a < b ? [a, b] : [b, a];
+
+    return arr.filter(num => num >= min && num <= max).sort((x, y) => x - y);
 }
 
-myPrompt();
+const arr = [
+  {name: 'Bob', age: '25'},
+  {name: 'Ann', age: '30'},
+  {name: 'Tom', age: '35'},
+];
+
+//3 Функция fn
+const fn = (key) => (item) => {
+  console.log(item[key]);
+}
+
+//4 разворот строки
+function reverseStr(str) {
+  return str.split('').reverse().join('');
+}
+  
