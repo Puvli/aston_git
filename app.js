@@ -1,47 +1,58 @@
-//1 глубокое копирование
-function deepCopy(obj) { // рекурсивная функция
-    if (obj === null || typeof obj !== "object") {
-      return obj; // Возвращаем примитивы и null без изменений
-    }
-  
-    if (Array.isArray(obj)) {
-      return obj.map(deepCopy); // Для массивов создаем новый массив и копируем элементы рекурсивно
-    }
-  
-    const copy = {}; // Новый объект
-    for (let key in obj) {
-      if (obj.hasOwnProperty(key)) {
-        copy[key] = deepCopy(obj[key]); // Рекурсивное копирование
-      }
-    }
-  
-    return copy;
-  }
+//1.расширение функции
+function memoize(callback) {
+  const cache = {};
 
-  //2
-  function selectFromInterval(arr, a, b) {
-    if (!Array.isArray(arr)) {
-        throw new Error("first parameter must be an array!");
+  return function (...args) {
+    const key = JSON.stringify([...args].sort()); // Сортируем аргументы, чтобы порядок не влиял на ключ
+    console.log(key);
+    console.log("cache before ", cache);
+
+    if (cache[key] !== undefined) {
+      console.log("Get from cache");
+      return cache[key];
     }
 
-    if (!arr.every(item => typeof item === "number")) {
-        throw new Error("There are not only numbers in the array!");
-    }
+    console.log("First calculation");
+    const result = callback(...args);
+    cache[key] = result;
+    console.log("cache after ", cache);
 
-    if (!Number.isInteger(a) || !Number.isInteger(b)) {
-        throw new Error("incorrect input parameters!");
-    }
-
-    const [min, max] = a < b ? [a, b] : [b, a];
-
-    return arr.filter(num => num >= min && num <= max).sort((x, y) => x - y);
+    return result;
+  };
 }
 
-const arr = [
-  {name: 'Bob', age: '25'},
-  {name: 'Ann', age: '30'},
-  {name: 'Tom', age: '35'},
-];
+//2. каррированная функция
+function add(a) {
+  return function (b) {
+    if (b !== undefined) {
+      return add(a + b); //рекурсивно вызываем add(a + b), накапливая сумму
+    }
+    return a;
+  };
+}
+
+//3. контекст
+function logger() {
+  console.log(`I output only external context: ${this.item}`);
+}
+
+const obj = { item: "some value" };
+
+const boundLogger = logger.bind(obj);
+boundLogger();
+
+console.log("call");
+logger.call(obj);
+
+console.log("apply");
+logger.apply(obj);
+
+//4. Полифил
+function myBind(fn, context, ...boundArgs) {
+  return function (...args) {
+    return fn.apply(context, [...boundArgs, ...args]);
+  };
+}
 
 //3 Функция fn
 const fn = (key) => (item) => {
