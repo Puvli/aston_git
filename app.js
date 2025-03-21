@@ -53,3 +53,14 @@ function myBind(fn, context, ...boundArgs) {
     return fn.apply(context, [...boundArgs, ...args]);
   };
 }
+
+//3 Функция fn
+const fn = (key) => (item) => {
+  console.log(item[key]);
+}
+
+//4 разворот строки
+function reverseStr(str) {
+  return str.split('').reverse().join('');
+}
+  
