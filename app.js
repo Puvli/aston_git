@@ -1,66 +1,79 @@
-//1.расширение функции
-function memoize(callback) {
-  const cache = {};
-
-  return function (...args) {
-    const key = JSON.stringify([...args].sort()); // Сортируем аргументы, чтобы порядок не влиял на ключ
-    console.log(key);
-    console.log("cache before ", cache);
-
-    if (cache[key] !== undefined) {
-      console.log("Get from cache");
-      return cache[key];
-    }
-
-    console.log("First calculation");
-    const result = callback(...args);
-    cache[key] = result;
-    console.log("cache after ", cache);
-
-    return result;
-  };
+class Node {
+  constructor(value) {
+      this.value = value;
+      this.next = null;
+  }
 }
 
-//2. каррированная функция
-function add(a) {
-  return function (b) {
-    if (b !== undefined) {
-      return add(a + b); //рекурсивно вызываем add(a + b), накапливая сумму
-    }
-    return a;
-  };
+class LinkedList {
+  constructor() {
+      this.head = null;
+      this.tail = null;
+      this.length = 0;
+  }
+
+  // Добавление в конец 
+  append(value) {
+      const newNode = new Node(value);
+      if (!this.head) {
+          this.head = this.tail = newNode;
+      } else {
+          this.tail.next = newNode;
+          this.tail = newNode;
+      }
+      this.length++;
+  }
+
+  // Добавление в начало 
+  prepend(value) {
+      const newNode = new Node(value);
+      if (!this.head) {
+          this.head = this.tail = newNode;
+      } else {
+          newNode.next = this.head;
+          this.head = newNode;
+      }
+      this.length++;
+  }
+
+  // Удаление элемента 
+  remove(value) {
+      if (!this.head) return false;
+
+      if (this.head.value === value) {
+          this.head = this.head.next;
+          if (!this.head) this.tail = null;
+          this.length--;
+          return true;
+      }
+
+      let current = this.head;
+      while (current.next) {
+          if (current.next.value === value) {
+              current.next = current.next.next;
+              if (!current.next) this.tail = current; 
+              this.length--;
+              return true;
+          }
+          current = current.next;
+      }
+      return false;
+  }
+
+  // Поиск элемента (find)
+  find(value) {
+      let current = this.head;
+      while (current) {
+          if (current.value === value) return current;
+          current = current.next;
+      }
+      return null;
+  }
+
+  // Получение размера (size)
+  size() {
+      return this.length;
+  }
+
 }
 
-//3. контекст
-function logger() {
-  console.log(`I output only external context: ${this.item}`);
-}
-
-const obj = { item: "some value" };
-
-const boundLogger = logger.bind(obj);
-boundLogger();
-
-console.log("call");
-logger.call(obj);
-
-console.log("apply");
-logger.apply(obj);
-
-//4. Полифил
-function myBind(fn, context, ...boundArgs) {
-  return function (...args) {
-    return fn.apply(context, [...boundArgs, ...args]);
-  };
-}
-
-//3 Функция fn
-const fn = (key) => (item) => {
-  console.log(item[key]);
-}
-
-//4 разворот строки
-function reverseStr(str) {
-  return str.split('').reverse().join('');
-}
-  
